@@ -52,6 +52,7 @@ export const useAuthentication = () => {
 
             setLoading(false)
             return user
+
         } catch (error) {
             console.log(error.message);
             console.log(typeof error.message);
