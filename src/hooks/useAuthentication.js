@@ -1,4 +1,4 @@
-import { db } from '../firebase/conifg';
+import { app, db } from '../firebase/conifg';
 
 
 import {
@@ -21,7 +21,7 @@ export const useAuthentication = () => {
 
     const [cancelled, setCancelled] = useState(false)
 
-    const auth = getAuth()
+    const auth = getAuth(app)
 
 
     function checkiIfIsCancelled() {
