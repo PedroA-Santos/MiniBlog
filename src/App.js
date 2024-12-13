@@ -16,12 +16,12 @@ import Home from './Pages/Home/Home';
 import About from './Pages/About/About';
 import Login from './Pages/Login/Login';
 import Register from './Pages/Register/Register';
+import CreatePost from './Pages/CreatePost/CreatePost';
+import Dashboard from './Pages/Dashboard/Dashboard';
 
 //COMPONENTES
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import CreatePost from './Pages/CreatePost/CreatePost';
-import Dashboard from './Pages/Dashboard/Dashboard';
 
 
 
@@ -54,7 +54,7 @@ function App() {
               <Route path='about' element={<About />} />
               <Route path='/login' element={!user ? <Login /> : <Navigate to="/login" />} />
               <Route path='/register' element={!user ? <Register /> : <Navigate to="/login" />} />
-              <Route path='/posts/crate' element={user ? <CreatePost /> : <Navigate to="/login" />} />
+              <Route path='/posts/create' element={user ? <CreatePost /> : <Navigate to="/login" />} />
               <Route path='dashboard' element={user ? <Dashboard /> : <Navigate to="/login" />} />
             </Routes>
           </div>
