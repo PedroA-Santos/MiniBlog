@@ -1,130 +1,150 @@
-import styles from './EditPost.module.css'
+import styles from "./EditPost.module.css";
 
-
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuthValue } from "../../context/AuthContext"
-import { useInsertDocument } from '../../hooks/useInsertDocument';
-import { useFetchDocument } from '../../hooks/useFetchDocument';
-
-
-
-
+import { useAuthValue } from "../../context/AuthContext";
+import { useFetchDocument } from "../../hooks/useFetchDocument";
+import { useUpdateDocument } from "../../hooks/useUpdateDocument";
 
 const EditPost = () => {
+  const { id } = useParams();
+  const { document: post } = useFetchDocument("posts", id);
 
-    const { id } = useParams();
-    const { document: post } = useFetchDocument("posts", id);
-    const [title, setTitle] = useState("");
-    const [image, setImage] = useState("");
-    const [body, setBody] = useState("");
-    const [tags, setTags] = useState([]);
-    const [formError, setFormError] = useState("");
+  console.log(post);
 
-    useEffect(() => {
-        if (post) {
-            setTitle(post.title)
-            setBody(post.body)
-            setImage(post.image)
+  const [title, setTitle] = useState("");
+  const [image, setImage] = useState("");
+  const [body, setBody] = useState("");
+  const [tags, setTags] = useState([]);
+  const [formError, setFormError] = useState("");
 
-            const textTags = post.tagsArray.join(", ");
+  // fill form data
+  useEffect(() => {
+    if (post) {
+      setTitle(post.title);
+      setImage(post.image);
+      setBody(post.body);
 
-            setTags(textTags)
-        }
-    }, [post])
+      const textTags = post.tagsArray.join(", ");
 
-    const { user } = useAuthValue();
+      setTags(textTags);
+    }
+  }, [post]);
 
-    const { insertDocument, response } = useInsertDocument("posts");
+  const { user } = useAuthValue();
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
+  const { updateDocument, response } = useUpdateDocument("posts");
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setFormError("")
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setFormError("");
 
-
-
-        //validate image url
-
-        try {
-            new URL(image)
-        } catch (error) {
-            setFormError("A imagem precisa ser uma URL")
-        }
-
-        //criar array de tags
-
-        const tagsArray = tags.split(",").map((tag) => tag.trim().toLowerCase());
-
-
-        //checar todos os valores
-
-        if (!title || !image || !body || !tags) {
-            setFormError("Por favor, preencha todos os campos! ")
-        }
-
-        if (formError) return;
-
-        insertDocument({
-            title,
-            image,
-            body,
-            tagsArray,
-            uid: user.uid,
-            createdBy: user.displayName
-        })
-
-        //redirect to home page
-
-        navigate("/")
+    // validate image
+    try {
+      new URL(image);
+    } catch (error) {
+      setFormError("A imagem precisa ser uma URL.");
     }
 
-    return (
-        <div className={styles.edit_post}>
-            {post && (
-                <>
-                    <h2>Editando Post: {post.title}</h2>
-                    <p>Altere como desejar</p>
+    // create tags array
+    const tagsArray = tags.split(",").map((tag) => tag.trim());
 
-                    <form onSubmit={handleSubmit}>
-                        <label >
-                            <span>Título:</span>
-                            <input type="text" name='title' required placeholder='Insira seu título' onChange={(e) => setTitle(e.target.value)}
-                                value={title} />
-                        </label>
-                        <label>
-                            <span>Imagem:</span>
-                            <input type="text" name='image' required placeholder='Insira sua imagem ' onChange={(e) => setImage(e.target.value)} value={image} />
-                        </label>
-                        <label >
-                            <p className={styles.preview_title}>Preview da Imagem Atual</p>
-                            <img className={styles.image_preview} src={post.image} alt={post.title} />
-                        </label>
-                        <label>
-                            <span>Conteúdo:</span>
-                            <textarea name='body' required placeholder='Insira o corpo do post' onChange={(e) => setBody(e.target.value)} value={body} />
-                        </label>
-                        <label>
-                            <span>Tags:</span>
-                            <input type="text" name='tags' placeholder='Insira suas Tags separadas por vírgulas' required onChange={(e) => setTags(e.target.value)} value={tags} />
-                        </label>
-                        {!response.loading && <button className="btn">Editar</button>}
-                        {response.loading && (
-                            <button className="btn" disabled>
-                                Aguarde.. .
-                            </button>
-                        )}
-                        {(response.error || formError) && (
-                            <p className="error">{response.error || formError}</p>
-                        )}
-                    </form>
+    console.log(tagsArray);
 
-                </>
+    console.log({
+      title,
+      image,
+      body,
+      tags: tagsArray,
+    });
+
+    const data = {
+      title,
+      image,
+      body,
+      tags: tagsArray,
+    };
+
+    console.log(post);
+
+    updateDocument(id, data);
+
+    // redirect to home page
+    navigate("/dashboard");
+  };
+
+  return (
+    <div className={styles.edit_post}>
+      {post && (
+        <>
+          <h2>Editando post: {post.title}</h2>
+          <p>Altere os dados do post como desejar</p>
+          <form onSubmit={handleSubmit}>
+            <label>
+              <span>Título:</span>
+              <input
+                type="text"
+                name="text"
+                required
+                placeholder="Pense num bom título..."
+                onChange={(e) => setTitle(e.target.value)}
+                value={title}
+              />
+            </label>
+            <label>
+              <span>URL da imagem:</span>
+              <input
+                type="text"
+                name="image"
+                required
+                placeholder="Insira uma imagem que representa seu post"
+                onChange={(e) => setImage(e.target.value)}
+                value={image}
+              />
+            </label>
+            <p className={styles.preview_title}>Preview da imagem atual:</p>
+            <img
+              className={styles.image_preview}
+              src={post.image}
+              alt={post.title}
+            />
+            <label>
+              <span>Conteúdo:</span>
+              <textarea
+                name="body"
+                required
+                placeholder="Insira o conteúdo do post"
+                onChange={(e) => setBody(e.target.value)}
+                value={body}
+              ></textarea>
+            </label>
+            <label>
+              <span>Tags:</span>
+              <input
+                type="text"
+                name="tags"
+                required
+                placeholder="Insira as tags separadas por vírgula"
+                onChange={(e) => setTags(e.target.value)}
+                value={tags}
+              />
+            </label>
+            {!response.loading && <button className="btn">Editar</button>}
+            {response.loading && (
+              <button className="btn" disabled>
+                Aguarde.. .
+              </button>
             )}
-        </div>
-    )
-}
+            {(response.error || formError) && (
+              <p className="error">{response.error || formError}</p>
+            )}
+          </form>
+        </>
+      )}
+    </div>
+  );
+};
 
-export default EditPost
+export default EditPost;
