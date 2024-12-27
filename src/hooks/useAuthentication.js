@@ -1,4 +1,4 @@
-import { app, db } from '../firebase/conifg';
+import { app, db } from '../firebase/config';
 
 
 import {
