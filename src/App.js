@@ -24,6 +24,7 @@ import Post from './Pages/Post/Post';
 //COMPONENTES
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import EditPost from './Pages/EditPost/EditPost';
 
 
 
@@ -60,6 +61,7 @@ function App() {
               <Route path='/register' element={!user ? <Register /> : <Navigate to="/login" />} />
               <Route path='/posts/create' element={user ? <CreatePost /> : <Navigate to="/login" />} />
               <Route path='dashboard' element={user ? <Dashboard /> : <Navigate to="/login" />} />
+              <Route path='posts/edit/:id' element={user ? <EditPost /> : <Navigate to="/login" />} />
             </Routes>
           </div>
           <Footer />
